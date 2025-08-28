@@ -15,7 +15,7 @@ public class WeChatMessageSplitter {
 
     private static final int MAX_MARKDOWN_BYTES = 4096;
     private static final int MAX_TEXT_BYTES = 4000;
-    private static final int SAFETY_MARGIN = 200;
+    private static final int SAFETY_MARGIN = 1001;
     private static final Pattern FILE_PATTERN = Pattern.compile("文件\\d+：\\s*[^\\n**文件评价]+");
 
     /**
@@ -75,7 +75,6 @@ public class WeChatMessageSplitter {
             // 添加分段标识
             if (segmentCount > 1 || end < totalBytes) {
                 stringBuilder.append("\n").append(String.format("**📝 分段发送 (%d/N)**", segmentCount));
-                stringBuilder.append("\n---\n\n"); // 分隔线
             }
 
             segments.add(stringBuilder.toString());
@@ -116,7 +115,6 @@ public class WeChatMessageSplitter {
             // 添加分段标识
             if (segmentCount > 1 || endPosition < content.length()) {
                 stringBuilder.append("\n").append(String.format("**📝 分段发送 (%d/N)**", segmentCount));
-                stringBuilder.append("\n---\n\n"); // 分隔线
             }
 
             segments.add(stringBuilder.toString());

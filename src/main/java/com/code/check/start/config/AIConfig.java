@@ -2,6 +2,7 @@ package com.code.check.start.config;
 
 import com.code.check.start.service.OrderToolsService;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,7 +31,7 @@ public class AIConfig {
             ChatClient.Builder builder
     ) {
         return builder
-                .defaultSystem("你是一名高级代码审计员，帮助企业分析提交代码中的潜在问题")
+                .defaultSystem("高级代码审计员，分析代码安全漏洞与性能问题")
                 .build();
     }
 

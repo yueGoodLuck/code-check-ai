@@ -36,10 +36,6 @@ public class GitlabPushEventListener extends GitLabEventListenerAbs {
     @Override
     public void onEvent(GitlabEvent event) {
         log.info("gitlab push 事件监听:{}", JSON.toJSONString(event));
-        if (!ObjectUtils.isEmpty(event.getSubmission().getMessage()) && event.getSubmission().getMessage().startsWith("Merge branch")){
-            log.info("合并请求事件监听不处理:{}", JSON.toJSONString(event));
-            return;
-        }
         CodeSubmission submission = event.getSubmission();
         Map<String, FileInspectionResult> stringFileInspectionResultMap = analysisService.analyzeEachFileInSubmission(submission);
         String s = generateSummaryNotification(submission, stringFileInspectionResultMap);

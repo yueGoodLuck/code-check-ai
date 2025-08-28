@@ -214,7 +214,7 @@ public class CodeProcessingService {
     public String generateFilePrompt(CodeChange fileChange, String commitMessage) {
         StringBuilder promptBuilder = new StringBuilder();
 
-        promptBuilder.append("请检查以下文件的代码变更，专注于找出需要修改的问题(特别检查不能出现魔法值赋值)：\n\n");
+        promptBuilder.append("请检查以下文件的代码变更，专注于找出需要修改的问题(使用阿里巴巴java开发规范,特别检查金额参数不能出现魔法值赋值)：\n\n");
         promptBuilder.append("文件路径: ").append(fileChange.getFilePath()).append("\n");
         promptBuilder.append("提交信息: ").append(commitMessage).append("\n");
 
@@ -261,6 +261,43 @@ public class CodeProcessingService {
         promptBuilder.append("3. 所有字段值均为字符串类型，使用双引号包裹\n");
         promptBuilder.append("4. 确保JSON格式正确，可被标准JSON解析器解析\n");
 
+
+        return promptBuilder.toString();
+    }
+
+    public String generateFilePrompt2(CodeChange fileChange, String commitMessage) {
+        StringBuilder promptBuilder = new StringBuilder();
+
+        // 精简指令部分（减少50% Token）
+        promptBuilder.append("代码审计：检查代码变更，专注阿里规范。重点金额魔法值参数。\n\n");
+        promptBuilder.append("文件: ").append(fileChange.getFilePath()).append("\n");
+        promptBuilder.append("提交: ").append(commitMessage).append("\n");
+
+        if (fileChange.getIsNewFile()) {
+            promptBuilder.append("[新文件]\n");
+        }
+
+        // 优化代码展示格式
+        if (!fileChange.getAddedLines().isEmpty()) {
+            promptBuilder.append("\n+++ 新增:\n");
+            for (CodeLine codeLine : fileChange.getAddedLines()) {
+                promptBuilder.append("+L").append(codeLine.getLineNumber())
+                        .append(": ").append(codeLine.getCodeLine()).append("\n");
+            }
+        }
+
+        if (!fileChange.getRemovedLines().isEmpty() && fileChange.getRemovedLines().size() <= 10) {
+            promptBuilder.append("\n--- 删除:\n");
+            for (CodeLine codeLine : fileChange.getRemovedLines()) {
+                promptBuilder.append("-L").append(codeLine.getLineNumber())
+                        .append(": ").append(codeLine.getCodeLine()).append("\n");
+            }
+        }
+
+        // 大幅精简JSON格式说明（减少70% Token）
+        promptBuilder.append("\n输出严格JSON格式：\n");
+        promptBuilder.append("{\"hasIssues\":bool,\"fileEvaluation\":\"str\",\"issues\":[{\"description\":\"str\",\"codeLine\":int,\"issueType\":\"错误|警告|建议\",\"severity\":\"高|中|低\",\"suggestedFix\":\"str\",\"fixedCodeExample\":\"str\",\"reason\":\"str\"}]}\n");
+        promptBuilder.append("规则: hasIssues为false时issues为空; codeLine不确定填-1; 确保JSON可解析");
 
         return promptBuilder.toString();
     }
