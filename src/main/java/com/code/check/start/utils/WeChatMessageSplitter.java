@@ -15,7 +15,7 @@ public class WeChatMessageSplitter {
 
     private static final int MAX_MARKDOWN_BYTES = 4096;
     private static final int MAX_TEXT_BYTES = 4000;
-    private static final int SAFETY_MARGIN = 1001;
+    private static final int SAFETY_MARGIN = 1101;
     private static final Pattern FILE_PATTERN = Pattern.compile("文件\\d+：\\s*[^\\n**文件评价]+");
 
     /**

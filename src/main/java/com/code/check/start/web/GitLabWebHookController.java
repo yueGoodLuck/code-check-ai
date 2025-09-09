@@ -72,16 +72,6 @@ public class GitLabWebHookController {
             Long projectId = payload.get("project_id").asLong();
             String projectName = payload.get("project").get("name").asText();
             String repositoryUrl = payload.get("repository").get("url").asText();
-            JsonNode commits = payload.get("commits");
-            if (!ObjectUtils.isEmpty(commits)) {
-                JsonNode jsonNode = commits.get(commits.size() - 1);
-                String commitMessage = jsonNode.get("message").asText();
-                if (!ObjectUtils.isEmpty(commitMessage) && (commitMessage.startsWith("Merge branch") ||
-                        commitMessage.startsWith("Merge remote-tracking"))) {
-                    log.info("合并请求事件监听不处理:{}", JSON.toJSONString(jsonNode));
-                    return;
-                }
-            }
             // 处理每个提交
             for (JsonNode commitNode : payload.get("commits")) {
                 String commitId = commitNode.get("id").asText();

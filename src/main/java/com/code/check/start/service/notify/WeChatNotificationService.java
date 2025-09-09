@@ -105,5 +105,14 @@ public class WeChatNotificationService {
     }
 
 
+    public static void main(String[] args) {
+        // 初始化服务
+        String webhookUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxxx";
+        WeChatNotificationService service = new WeChatNotificationService(webhookUrl);
+        // 发送文本消息
+        service.sendTextMessage("Hello, this is a test message.");
+    }
+
+
 
 }

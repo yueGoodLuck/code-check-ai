@@ -37,6 +37,14 @@ public class GitlabPushEventListener extends GitLabEventListenerAbs {
     public void onEvent(GitlabEvent event) {
         log.info("gitlab push 事件监听:{}", JSON.toJSONString(event));
         CodeSubmission submission = event.getSubmission();
+        String message = submission.getMessage();
+        if (!ObjectUtils.isEmpty(message)) {
+            String lowerCase = message.trim().toLowerCase();
+            if (lowerCase.startsWith("merge") || lowerCase.startsWith("revert")) {
+                log.info("合并请求事件监听不处理:{}", JSON.toJSONString(event));
+                return;
+            }
+        }
         Map<String, FileInspectionResult> stringFileInspectionResultMap = analysisService.analyzeEachFileInSubmission(submission);
         String s = generateSummaryNotification(submission, stringFileInspectionResultMap);
         log.info("gitlab push 事件汇总通知:{}", s);
@@ -49,7 +57,6 @@ public class GitlabPushEventListener extends GitLabEventListenerAbs {
     public void init() {
         GitlabEventPublisher.addListener(this);
     }
-
 
 
     public static String generateSummaryNotification(CodeSubmission submission,
@@ -85,7 +92,7 @@ public class GitlabPushEventListener extends GitLabEventListenerAbs {
                 int issueIndex = 1;
                 for (CodeIssue issue : fileResult.getIssues()) {
                     markdown.append(issueIndex).append(". **问题等级：**").append(issue.getSeverity()).append("\n");
-                    markdown.append("   **代码行数：**").append(!ObjectUtils.isEmpty(issue.getLineNumber() ) && issue.getLineNumber() > 0 ? issue.getLineNumber() : "未知").append("\n");
+                    markdown.append("   **代码行数：**").append(!ObjectUtils.isEmpty(issue.getLineNumber()) && issue.getLineNumber() > 0 ? issue.getLineNumber() : "未知").append("\n");
                     markdown.append("   **问题描述：**").append(escapeWeChatMarkdown(issue.getDescription())).append("\n");
 
                     // 代码块处理 - 企业微信Markdown支持```代码块
